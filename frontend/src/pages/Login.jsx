@@ -19,44 +19,39 @@ function Login() {
 
     try {
       const response = await axios.post(
-        "https://ibra-online-bank-api.onrender.com",
+        "https://ibra-online-bank-api.onrender.com/api/auth/login",
         formData
       );
 
-      localStorage.setItem(
-        "token",
-        response.data.token
-      );
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(response.data.user)
-      );
+      alert("Login successful");
 
-      window.location.href = "/dashboard";
-
+      window.location.href = "/#/dashboard";
     } catch (error) {
-      alert(error.response.data.message);
+      console.error(error);
+
+      alert(
+        error.response?.data?.message ||
+          "Login failed. Please try again."
+      );
     }
   };
 
   return (
     <div className="auth-page">
       <div className="auth-overlay">
-        <form
-          className="auth-form"
-          onSubmit={handleLogin}
-        >
+        <form className="auth-form" onSubmit={handleLogin}>
           <h1>Welcome Back</h1>
 
-          <p>
-            Login to your online banking account
-          </p>
+          <p>Login to your online banking account</p>
 
           <input
             type="email"
             name="email"
             placeholder="Email"
+            value={formData.email}
             onChange={handleChange}
           />
 
@@ -64,12 +59,11 @@ function Login() {
             type="password"
             name="password"
             placeholder="Password"
+            value={formData.password}
             onChange={handleChange}
           />
 
-          <button type="submit">
-            Login
-          </button>
+          <button type="submit">Login</button>
         </form>
       </div>
     </div>
