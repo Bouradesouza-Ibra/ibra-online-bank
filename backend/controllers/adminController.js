@@ -61,9 +61,11 @@ const deleteUser = async (req, res) => {
     );
 
     if (account.rows.length > 0) {
+      const accountId = account.rows[0].id;
+
       await pool.query(
-        "DELETE FROM transactions WHERE account_id = $1",
-        [account.rows[0].id]
+        "DELETE FROM transactions WHERE account_id = $1 OR sender_id = $1 OR receiver_id = $1",
+        [accountId]
       );
 
       await pool.query(
@@ -87,7 +89,6 @@ const deleteUser = async (req, res) => {
     });
   }
 };
-
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
