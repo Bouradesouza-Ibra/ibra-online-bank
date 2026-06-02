@@ -20,7 +20,7 @@ function Register() {
 
     try {
       await axios.post(
-        "http://localhost:5050/api/auth/register",
+        "https://ibra-online-bank-api.onrender.com",
         formData
       );
 

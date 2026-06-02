@@ -29,9 +29,9 @@ function Admin() {
 
   const getAdminData = async () => {
     try {
-      const usersResponse = await axios.get("http://localhost:5050/api/admin/users");
-      const accountsResponse = await axios.get("http://localhost:5050/api/admin/accounts");
-      const transactionsResponse = await axios.get("http://localhost:5050/api/admin/transactions");
+      const usersResponse = await axios.get("https://ibra-online-bank-api.onrender.com");
+      const accountsResponse = await axios.get("https://ibra-online-bank-api.onrender.com");
+      const transactionsResponse = await axios.get("https://ibra-online-bank-api.onrender.com");
 
       setUsers(usersResponse.data.users);
       setAccounts(accountsResponse.data.accounts);
@@ -43,7 +43,7 @@ function Admin() {
 
   const handleDeleteUser = async (id) => {
     try {
-      await axios.delete(`http://localhost:5050/api/admin/users/${id}`);
+      await axios.delete(`https://ibra-online-bank-api.onrender.com${id}`);
       getAdminData();
     } catch (error) {
       console.log(error);
@@ -60,7 +60,7 @@ function Admin() {
     }
 
     axios
-      .put(`http://localhost:5050/api/admin/users/${user.id}`, {
+      .put(`https://ibra-online-bank-api.onrender.com${user.id}`, {
         full_name,
         email,
         role,

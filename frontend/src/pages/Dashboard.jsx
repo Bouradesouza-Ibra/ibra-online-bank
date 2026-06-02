@@ -30,14 +30,14 @@ function Dashboard() {
 
   const getBalance = async () => {
     const response = await axios.get(
-      `http://localhost:5050/api/accounts/balance/${user.id}`
+      `https://ibra-online-bank-api.onrender.com${user.id}`
     );
     setAccount(response.data.account);
   };
 
   const getTransactions = async () => {
     const response = await axios.get(
-      `http://localhost:5050/api/accounts/transactions/${user.id}`
+      `https://ibra-online-bank-api.onrender.com${user.id}`
     );
     setTransactions(response.data.transactions);
   };
@@ -46,7 +46,7 @@ function Dashboard() {
     e.preventDefault();
 
     const response = await axios.post(
-      "http://localhost:5050/api/accounts/deposit",
+      "https://ibra-online-bank-api.onrender.com",
       {
         userId: user.id,
         amount: depositAmount,
@@ -64,7 +64,7 @@ function Dashboard() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5050/api/accounts/withdraw",
+        "https://ibra-online-bank-api.onrender.com",
         {
           userId: user.id,
           amount: withdrawAmount,
@@ -85,7 +85,7 @@ function Dashboard() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5050/api/accounts/transfer",
+        "https://ibra-online-bank-api.onrender.com",
         {
           fromUserId: user.id,
           toUserId: toUserId,
