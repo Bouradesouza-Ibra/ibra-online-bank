@@ -4,17 +4,19 @@ import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { DataGrid } from "@mui/x-data-grid";
 
+const API_URL = "https://ibra-online-bank-api.onrender.com";
+
 function Admin() {
   const currentUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     if (!currentUser) {
-      window.location.href = "/login";
+      window.location.href = "/#/login";
       return;
     }
 
     if (currentUser.role !== "admin") {
-      window.location.href = "/dashboard";
+      window.location.href = "/#/dashboard";
     }
   }, []);
 
@@ -29,24 +31,26 @@ function Admin() {
 
   const getAdminData = async () => {
     try {
-      const usersResponse = await axios.get("https://ibra-online-bank-api.onrender.com");
-      const accountsResponse = await axios.get("https://ibra-online-bank-api.onrender.com");
-      const transactionsResponse = await axios.get("https://ibra-online-bank-api.onrender.com");
+      const usersResponse = await axios.get(`${API_URL}/api/admin/users`);
+      const accountsResponse = await axios.get(`${API_URL}/api/admin/accounts`);
+      const transactionsResponse = await axios.get(
+        `${API_URL}/api/admin/transactions`
+      );
 
       setUsers(usersResponse.data.users);
       setAccounts(accountsResponse.data.accounts);
       setTransactions(transactionsResponse.data.transactions);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   const handleDeleteUser = async (id) => {
     try {
-      await axios.delete(`https://ibra-online-bank-api.onrender.com${id}`);
+      await axios.delete(`${API_URL}/api/admin/users/${id}`);
       getAdminData();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -60,18 +64,18 @@ function Admin() {
     }
 
     axios
-      .put(`https://ibra-online-bank-api.onrender.com${user.id}`, {
+      .put(`${API_URL}/api/admin/users/${user.id}`, {
         full_name,
         email,
         role,
       })
       .then(() => getAdminData())
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   };
 
   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = "/login";
+    window.location.href = "/#/login";
   };
 
   const filteredUsers = users.filter(
@@ -92,7 +96,9 @@ function Admin() {
       renderCell: (params) => (
         <div style={{ display: "flex", gap: "10px" }}>
           <button onClick={() => handleEditUser(params.row)}>Edit</button>
-          <button onClick={() => handleDeleteUser(params.row.id)}>Delete</button>
+          <button onClick={() => handleDeleteUser(params.row.id)}>
+            Delete
+          </button>
         </div>
       ),
     },
@@ -129,7 +135,7 @@ function Admin() {
           📈 Analytics
         </button>
 
-        <button onClick={() => (window.location.href = "/dashboard")}>
+        <button onClick={() => (window.location.href = "/#/dashboard")}>
           🏦 User Dashboard
         </button>
 
