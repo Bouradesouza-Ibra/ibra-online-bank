@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_URL = "https://ibra-online-bank-api.onrender.com";
+
 function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     if (!user) {
-      window.location.href = "/login";
+      window.location.href = "/#/login";
     }
   }, []);
 
@@ -25,57 +27,69 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    window.location.href = "/#/login";
   };
 
   const getBalance = async () => {
-    const response = await axios.get(
-      `https://ibra-online-bank-api.onrender.com${user.id}`
-    );
-    setAccount(response.data.account);
+    try {
+      const response = await axios.get(
+        `${API_URL}/api/accounts/balance/${user.id}`
+      );
+
+      setAccount(response.data.account);
+    } catch (error) {
+      console.error(error);
+      setMessage("Could not load account balance");
+    }
   };
 
   const getTransactions = async () => {
-    const response = await axios.get(
-      `https://ibra-online-bank-api.onrender.com${user.id}`
-    );
-    setTransactions(response.data.transactions);
+    try {
+      const response = await axios.get(
+        `${API_URL}/api/accounts/transactions/${user.id}`
+      );
+
+      setTransactions(response.data.transactions);
+    } catch (error) {
+      console.error(error);
+      setMessage("Could not load transactions");
+    }
   };
 
   const handleDeposit = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post(
-      "https://ibra-online-bank-api.onrender.com",
-      {
+    try {
+      const response = await axios.post(`${API_URL}/api/accounts/deposit`, {
         userId: user.id,
         amount: depositAmount,
-      }
-    );
+      });
 
-    setMessage(response.data.message);
-    setDepositAmount("");
-    getBalance();
-    getTransactions();
+      setMessage(response.data.message);
+      setDepositAmount("");
+      getBalance();
+      getTransactions();
+    } catch (error) {
+      console.error(error);
+      setMessage(error.response?.data?.message || "Deposit failed");
+    }
   };
 
   const handleWithdraw = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "https://ibra-online-bank-api.onrender.com",
-        {
-          userId: user.id,
-          amount: withdrawAmount,
-        }
-      );
+      const response = await axios.post(`${API_URL}/api/accounts/withdraw`, {
+        userId: user.id,
+        amount: withdrawAmount,
+      });
 
       setMessage(response.data.message);
       setWithdrawAmount("");
       getBalance();
       getTransactions();
     } catch (error) {
+      console.error(error);
       setMessage(error.response?.data?.message || "Withdraw failed");
     }
   };
@@ -84,14 +98,11 @@ function Dashboard() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "https://ibra-online-bank-api.onrender.com",
-        {
-          fromUserId: user.id,
-          toUserId: toUserId,
-          amount: transferAmount,
-        }
-      );
+      const response = await axios.post(`${API_URL}/api/accounts/transfer`, {
+        fromUserId: user.id,
+        toUserId: toUserId,
+        amount: transferAmount,
+      });
 
       setMessage(response.data.message);
       setToUserId("");
@@ -99,6 +110,7 @@ function Dashboard() {
       getBalance();
       getTransactions();
     } catch (error) {
+      console.error(error);
       setMessage(error.response?.data?.message || "Transfer failed");
     }
   };
@@ -117,7 +129,7 @@ function Dashboard() {
         </div>
 
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={() => (window.location.href = "/profile")}>
+          <button onClick={() => (window.location.href = "/#/profile")}>
             Profile
           </button>
 
@@ -208,8 +220,9 @@ function Dashboard() {
           transactions.map((transaction) => (
             <div className="transaction-item" key={transaction.id}>
               <p>
-                {transaction.type} - ${transaction.amount} -{" "}
-                {transaction.description}
+                {transaction.transaction_type || transaction.type} - $
+                {transaction.amount} -{" "}
+                {transaction.description || transaction.created_at}
               </p>
             </div>
           ))
